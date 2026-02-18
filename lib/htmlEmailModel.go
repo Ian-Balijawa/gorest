@@ -11,18 +11,11 @@ import (
 // will return [key1 value1 key2 value2 key3 value3]
 func StrArrHTMLModel(s string) []string {
 	var out []string
-	in := strings.Split(s, ";")
 
-	length := len(in)
-	for i := 0; i < length; i++ {
-		in[i] = strings.TrimSpace(in[i])
-
-		tmp := strings.Split(in[i], ":")
-		if len(tmp) == 2 {
-			tmp[0] = strings.TrimSpace(tmp[0])
-			tmp[1] = strings.TrimSpace(tmp[1])
-			out = append(out, tmp[0])
-			out = append(out, tmp[1])
+	for seg := range strings.SplitSeq(s, ";") {
+		seg = strings.TrimSpace(seg)
+		if k, v, ok := strings.Cut(seg, ":"); ok && !strings.Contains(v, ":") {
+			out = append(out, strings.TrimSpace(k), strings.TrimSpace(v))
 		}
 	}
 
