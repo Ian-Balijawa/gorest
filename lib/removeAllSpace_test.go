@@ -18,7 +18,8 @@ func TestRemoveAllSpace(t *testing.T) {
 		{"", ""},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		got := lib.RemoveAllSpace(tc.input)
 		if got != tc.want {
 			t.Errorf("lib.RemoveAllSpace(%q) = %q, want %q", tc.input, got, tc.want)

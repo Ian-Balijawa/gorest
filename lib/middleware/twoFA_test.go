@@ -50,7 +50,8 @@ func TestTwoFA(t *testing.T) {
 	}
 
 	// run the test cases
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			// create a new gin router and apply the TwoFA middleware to it
 			gin.SetMode(gin.TestMode)

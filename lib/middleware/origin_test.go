@@ -55,7 +55,8 @@ func TestCheckOrigin(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			cp := []middleware.CORSPolicy{}
 			cp = append(cp, middleware.CORSPolicy{"Access-Control-Allow-Origin", test.originAllowed})

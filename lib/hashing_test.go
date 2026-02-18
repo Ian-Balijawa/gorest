@@ -59,7 +59,8 @@ func TestHashPass(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			h, err := lib.HashPass(test.config, test.password, test.secret)
 			if (err != nil) != test.expectedErr {

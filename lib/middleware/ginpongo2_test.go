@@ -146,7 +146,8 @@ func TestPongo2(t *testing.T) {
 		t.Error(err)
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			// set up a gin router and handler
 			gin.SetMode(gin.TestMode)

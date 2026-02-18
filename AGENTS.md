@@ -289,8 +289,10 @@ func TestHashPass(t *testing.T) {
         {name: "blank password", ...},
         {name: "with password", ...},
     }
-    for _, test := range tests {
-        t.Run(test.name, func(t *testing.T) {
+    // safe pattern: capture per-iteration value for subtests to avoid closure-capture bugs
+    for i := range tests {
+        tc := tests[i]
+        t.Run(tc.name, func(t *testing.T) {
             // ...
         })
     }

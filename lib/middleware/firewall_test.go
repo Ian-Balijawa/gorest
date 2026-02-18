@@ -260,7 +260,8 @@ func TestFirewall(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run("TestCase"+tc.testNo, func(t *testing.T) {
 			// reset firewall state between test cases
 			middleware.ResetFirewallState()

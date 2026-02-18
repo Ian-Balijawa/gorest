@@ -74,7 +74,8 @@ func TestGetJWT(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.Algorithm, func(t *testing.T) {
 			middleware.JWTParams.Algorithm = tc.Algorithm
 
@@ -274,7 +275,8 @@ func TestJWT(t *testing.T) {
 		c.Status(http.StatusOK)
 	})
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			req, err := http.NewRequest("GET", "/", nil)
 			if err != nil {
@@ -396,7 +398,8 @@ func TestJWTAuthCookie(t *testing.T) {
 		c.Status(http.StatusOK)
 	})
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			req, err := http.NewRequest("GET", "/", nil)
 			if err != nil {
@@ -616,7 +619,8 @@ func TestRefreshJWTPayload(t *testing.T) {
 		c.Status(http.StatusOK)
 	})
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			req, err := http.NewRequest("POST", "/refresh", bytes.NewBuffer([]byte(tc.payload)))
 			if err != nil {
@@ -713,7 +717,8 @@ func TestRefreshJWTAuthCookie(t *testing.T) {
 		c.Status(http.StatusOK)
 	})
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			req, err := http.NewRequest("POST", "/refresh", bytes.NewBuffer([]byte("")))
 			if err != nil {
@@ -836,7 +841,8 @@ func TestRefreshJWTAuthHeader(t *testing.T) {
 		c.Status(http.StatusOK)
 	})
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
 			req, err := http.NewRequest("POST", "/refresh", nil)
 			if err != nil {
@@ -931,7 +937,8 @@ func TestValidateAccessJWT(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.Algorithm, func(t *testing.T) {
 			middleware.JWTParams.Algorithm = tc.Algorithm
 			var token *jwt.Token
@@ -1063,16 +1070,7 @@ func TestValidateAccessJWT(t *testing.T) {
 						keyBytes = key.([]byte)
 						expectedBytes = tc.ExpectedKey.([]byte)
 					}
-					if len(keyBytes) != len(expectedBytes) {
-						t.Errorf("unexpected key length: got %v, want %v", len(keyBytes), len(expectedBytes))
-					} else {
-						for i := 0; i < len(keyBytes); i++ {
-							if keyBytes[i] != expectedBytes[i] {
-								t.Errorf("unexpected key value at index %d: got %v, want %v", i, keyBytes[i], expectedBytes[i])
-								break
-							}
-						}
-					}
+					assertBytesEqual(t, keyBytes, expectedBytes)
 				}
 			}
 
@@ -1172,7 +1170,8 @@ func TestValidateRefreshJWT(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.Algorithm, func(t *testing.T) {
 			middleware.JWTParams.Algorithm = tc.Algorithm
 			var token *jwt.Token
@@ -1304,16 +1303,7 @@ func TestValidateRefreshJWT(t *testing.T) {
 						keyBytes = key.([]byte)
 						expectedBytes = tc.ExpectedKey.([]byte)
 					}
-					if len(keyBytes) != len(expectedBytes) {
-						t.Errorf("unexpected key length: got %v, want %v", len(keyBytes), len(expectedBytes))
-					} else {
-						for i := 0; i < len(keyBytes); i++ {
-							if keyBytes[i] != expectedBytes[i] {
-								t.Errorf("unexpected key value at index %d: got %v, want %v", i, keyBytes[i], expectedBytes[i])
-								break
-							}
-						}
-					}
+					assertBytesEqual(t, keyBytes, expectedBytes)
 				}
 			}
 
@@ -1368,7 +1358,8 @@ func TestValidateFailure(t *testing.T) {
 	}
 
 	// loop through the test cases
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.testName, func(t *testing.T) {
 			// call the respective validator function based on the test case
 			_, err := tc.validator(token)
@@ -1401,6 +1392,23 @@ func (d *DummyClaims) GetIssuedAt() (*jwt.NumericDate, error)       { return nil
 func (d *DummyClaims) GetIssuer() (string, error)                   { return "", nil }
 func (d *DummyClaims) GetNotBefore() (*jwt.NumericDate, error)      { return nil, nil }
 func (d *DummyClaims) GetSubject() (string, error)                  { return "", nil }
+
+func assertBytesEqual(t *testing.T, got, want []byte) {
+	t.Helper()
+	if bytes.Equal(got, want) {
+		return
+	}
+	if len(got) != len(want) {
+		t.Errorf("unexpected key length: got %d, want %d", len(got), len(want))
+		return
+	}
+	for i, b := range got {
+		if b != want[i] {
+			t.Errorf("unexpected key value at index %d: got 0x%02x, want 0x%02x", i, b, want[i])
+			return
+		}
+	}
+}
 
 // setParamsJWT sets JWT parameters for testing.
 func setParamsJWT() {

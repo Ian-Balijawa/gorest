@@ -26,7 +26,8 @@ func TestStrArrHTMLModel(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		got := lib.StrArrHTMLModel(tc.input)
 		if !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("lib.StrArrHTMLModel(%q) = %v, want %v", tc.input, got, tc.want)
@@ -57,7 +58,8 @@ func TestHTMLModel(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		got := lib.HTMLModel(tc.input)
 		if !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("lib.HTMLModel(%v) = %v, want %v", tc.input, got, tc.want)

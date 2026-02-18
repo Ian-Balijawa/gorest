@@ -45,7 +45,8 @@ func TestInitRateLimiter(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			limiterInstance, err := lib.InitRateLimiter(test.rateLimit, test.trustedProxy)
 

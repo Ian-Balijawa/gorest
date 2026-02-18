@@ -84,7 +84,8 @@ func TestValidatePath(t *testing.T) {
 	}
 
 	// loop through all test cases
-	for _, tt := range tests {
+	for i := range tests {
+		tt := tests[i]
 		t.Run(tt.fullPath, func(t *testing.T) {
 			// run validatePath function
 			result, err := lib.ValidatePath(tt.fullPath, allowedDir)

@@ -38,7 +38,8 @@ var tests = []totpTest{
 }
 
 func TestTOTP(t *testing.T) {
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		// test: create new TOTP object
 		otpByte, err := lib.NewTOTP(test.account, test.issuer, test.hash, test.digits)
 		if err != nil {

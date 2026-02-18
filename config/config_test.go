@@ -453,7 +453,8 @@ func TestErrorGetConfig(t *testing.T) {
 		t.Errorf("got error when calling config.Env(): %v", err)
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run("When missing: "+tc.Key, func(t *testing.T) {
 			currentValue := os.Getenv(tc.Key)
 
@@ -769,7 +770,8 @@ func TestConfigWithDifferentExpectedValueTypes(t *testing.T) {
 		t.Errorf("got error when calling config.Env(): %v", err)
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run("Setting "+tc.Key, func(t *testing.T) {
 			currentValue := os.Getenv(tc.Key)
 

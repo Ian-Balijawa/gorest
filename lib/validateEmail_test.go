@@ -18,11 +18,14 @@ func TestValidateEmail(t *testing.T) {
 		{"invalid@", false},
 		{"invalid@[127.0.0.1]", false},
 		{"me@no-destination.pilinux.me", false},
-		{"@missinglocalpart.com", false},
+		{"@missing-local-part.com", false},
+		{"hello@world@google.com", false},
+		{"user name@google.com", false},
 		{"security@google.com", true},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		got := lib.ValidateEmail(tc.email)
 		if got != tc.want {
 			t.Errorf("lib.ValidateEmail(%q) = %v, want %v", tc.email, got, tc.want)

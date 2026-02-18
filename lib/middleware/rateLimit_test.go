@@ -32,7 +32,8 @@ func TestRateLimit(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
 		t.Run(test.name, func(t *testing.T) {
 			limiterInstance, err := lib.InitRateLimiter(test.rateLimit, test.trustedProxy)
 			if err != nil {
@@ -61,7 +62,7 @@ func TestRateLimit(t *testing.T) {
 			})
 
 			// create 3 test requests
-			for i := 0; i < 3; i++ {
+			for i := range 3 {
 				req, err := http.NewRequest("GET", "/", nil)
 				if err != nil {
 					t.Fatalf("expected no error, got: %v", err)
