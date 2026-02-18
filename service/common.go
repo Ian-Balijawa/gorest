@@ -213,7 +213,7 @@ func SendEmail(email string, emailType int, opts ...string) (bool, error) {
 
 		optsLen := len(opts)
 		if optsLen > 0 {
-			for i := 0; i < optsLen; i++ {
+			for i := range optsLen {
 				key := fmt.Sprintf("additional_info_%d", i)
 				htmlModel[key] = opts[i]
 			}

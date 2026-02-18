@@ -43,7 +43,7 @@ func GenerateCode(length int) (string, error) {
 	var code []byte
 	maxIndex := big.NewInt(int64(len(characters)))
 
-	for i := 0; i < length; i++ {
+	for range length {
 		randomIndex, err := rand.Int(rand.Reader, maxIndex)
 		if err != nil {
 			return "", err

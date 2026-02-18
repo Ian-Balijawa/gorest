@@ -65,28 +65,28 @@ func CORS(cp []CORSPolicy) gin.HandlerFunc {
 		key := strings.ToLower(policy.Key)
 		switch key {
 		case "access-control-allow-origin":
-			for _, o := range strings.Split(policy.Value, ",") {
+			for o := range strings.SplitSeq(policy.Value, ",") {
 				trimmed := strings.TrimSpace(o)
 				if trimmed != "" {
 					corsConfig.AllowedOrigins = append(corsConfig.AllowedOrigins, trimmed)
 				}
 			}
 		case "access-control-allow-methods":
-			for _, m := range strings.Split(policy.Value, ",") {
+			for m := range strings.SplitSeq(policy.Value, ",") {
 				trimmed := strings.TrimSpace(m)
 				if trimmed != "" {
 					corsConfig.AllowedMethods = append(corsConfig.AllowedMethods, trimmed)
 				}
 			}
 		case "access-control-allow-headers":
-			for _, h := range strings.Split(policy.Value, ",") {
+			for h := range strings.SplitSeq(policy.Value, ",") {
 				trimmed := strings.TrimSpace(h)
 				if trimmed != "" {
 					corsConfig.AllowedHeaders = append(corsConfig.AllowedHeaders, trimmed)
 				}
 			}
 		case "access-control-expose-headers":
-			for _, h := range strings.Split(policy.Value, ",") {
+			for h := range strings.SplitSeq(policy.Value, ",") {
 				trimmed := strings.TrimSpace(h)
 				if trimmed != "" {
 					corsConfig.ExposedHeaders = append(corsConfig.ExposedHeaders, trimmed)
@@ -210,7 +210,7 @@ func CORS(cp []CORSPolicy) gin.HandlerFunc {
 					c.Writer.Header().Set(_cp.Key, origin)
 				} else {
 					allowed := false
-					for _, o := range strings.Split(_cp.Value, ",") {
+					for o := range strings.SplitSeq(_cp.Value, ",") {
 						if strings.TrimSpace(o) == origin {
 							allowed = true
 							break

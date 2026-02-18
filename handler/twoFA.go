@@ -860,7 +860,7 @@ func CreateBackup2FA(claims middleware.MyCustomClaims, authPayload model.AuthPay
 
 	// step 2: generate 10 backup codes
 	var codes [10]string
-	for i := 0; i < len(codes); i++ {
+	for i := range len(codes) {
 		for {
 			code, err := service.GenerateCode(16)
 			if err != nil {
@@ -873,7 +873,7 @@ func CreateBackup2FA(claims middleware.MyCustomClaims, authPayload model.AuthPay
 
 	// step 3: generate hashes of the codes
 	var codeHashes [len(codes)]string
-	for i := 0; i < len(codes); i++ {
+	for i := range len(codes) {
 		codeHash, err := service.CalcHash(
 			[]byte(codes[i]),
 			configSecurity.Blake2bSec,
@@ -912,7 +912,7 @@ func CreateBackup2FA(claims middleware.MyCustomClaims, authPayload model.AuthPay
 	twoFABackup = []model.TwoFABackup{} // reset
 	timeNow := time.Now()
 
-	for i := 0; i < len(codeHashes); i++ {
+	for i := range len(codeHashes) {
 		backup := model.TwoFABackup{}
 		backup.CreatedAt = timeNow
 		backup.CodeHash = codeHashes[i]

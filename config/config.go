@@ -495,8 +495,8 @@ func security() (securityConfig SecurityConfig, err error) {
 		if cp.Value != "" {
 			// in credentialed request, Access-Control-Allow-Origin must never be "*"
 			if isCredentialed {
-				values := strings.Split(cp.Value, ",")
-				for _, v := range values {
+				values := strings.SplitSeq(cp.Value, ",")
+				for v := range values {
 					v = strings.TrimSpace(v)
 					if v == "*" {
 						err = errors.New("credentialed request cannot have '*' as Access-Control-Allow-Origin")
@@ -515,8 +515,8 @@ func security() (securityConfig SecurityConfig, err error) {
 		if cp.Value != "" {
 			// in credentialed request, Access-Control-Allow-Headers must not be "*"
 			if isCredentialed {
-				values := strings.Split(cp.Value, ",")
-				for _, v := range values {
+				values := strings.SplitSeq(cp.Value, ",")
+				for v := range values {
 					v = strings.TrimSpace(v)
 					if v == "*" {
 						err = errors.New("credentialed request cannot have '*' as Access-Control-Allow-Headers")
@@ -536,8 +536,8 @@ func security() (securityConfig SecurityConfig, err error) {
 		if cp.Value != "" {
 			// in credentialed request, Access-Control-Expose-Headers must not be "*"
 			if isCredentialed {
-				values := strings.Split(cp.Value, ",")
-				for _, v := range values {
+				values := strings.SplitSeq(cp.Value, ",")
+				for v := range values {
 					v = strings.TrimSpace(v)
 					if v == "*" {
 						err = errors.New("credentialed request cannot have '*' as Access-Control-Expose-Headers")
@@ -556,8 +556,8 @@ func security() (securityConfig SecurityConfig, err error) {
 		if cp.Value != "" {
 			// in credentialed request, Access-Control-Allow-Methods must not be "*"
 			if isCredentialed {
-				values := strings.Split(cp.Value, ",")
-				for _, v := range values {
+				values := strings.SplitSeq(cp.Value, ",")
+				for v := range values {
 					v = strings.TrimSpace(v)
 					if v == "*" {
 						err = errors.New("credentialed request cannot have '*' as Access-Control-Allow-Methods")

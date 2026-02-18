@@ -98,8 +98,8 @@ func parseIPList(listType, ipList string) {
 	ipListMap = make(map[string]bool)
 
 	// split the list by comma and trim spaces
-	ipListSlice := strings.Split(ipList, ",")
-	for _, ip := range ipListSlice {
+	ipSeq := strings.SplitSeq(ipList, ",")
+	for ip := range ipSeq {
 		ip = strings.TrimSpace(ip)
 		if ip == "" {
 			continue
