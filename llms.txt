@@ -609,8 +609,8 @@ import gmodel "github.com/pilinux/gorest/database/model"
 // Auth model - users table
 type Auth struct {
     AuthID      uint64         `gorm:"primaryKey" json:"authID,omitempty"`
-    CreatedAt   time.Time      `json:"createdAt,omitempty"`
-    UpdatedAt   time.Time      `json:"updatedAt,omitempty"`
+    CreatedAt   time.Time      `json:"createdAt,omitzero"`
+    UpdatedAt   time.Time      `json:"updatedAt,omitzero"`
     DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
     Email       string         `gorm:"index" json:"email"`
     EmailCipher string         `json:"-"`
@@ -688,8 +688,8 @@ var InMemorySecret2FA = make(map[uint64]Secret2FA)
 // TempEmail model - holds data temporarily during email replacement
 type TempEmail struct {
     ID          uint64    `gorm:"primaryKey" json:"-"`
-    CreatedAt   time.Time `json:"createdAt,omitempty"`
-    UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+    CreatedAt   time.Time `json:"createdAt,omitzero"`
+    UpdatedAt   time.Time `json:"updatedAt,omitzero"`
     Email       string    `gorm:"index" json:"emailNew"`
     Password    string    `gorm:"-" json:"password,omitempty"`
     EmailCipher string    `json:"-"`

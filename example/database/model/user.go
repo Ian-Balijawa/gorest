@@ -11,8 +11,8 @@ import (
 // User model represents the users table.
 type User struct {
 	UserID    uint64         `gorm:"primaryKey" json:"userID,omitempty"`
-	CreatedAt time.Time      `json:"createdAt,omitempty"`
-	UpdatedAt time.Time      `json:"updatedAt,omitempty"`
+	CreatedAt time.Time      `json:"createdAt,omitzero"`
+	UpdatedAt time.Time      `json:"updatedAt,omitzero"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 	FirstName string         `json:"firstName,omitempty"`
 	LastName  string         `json:"lastName,omitempty"`

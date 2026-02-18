@@ -29,7 +29,7 @@ func (kv *KV) Trim() error {
 // KVHash represents a key with hash values.
 type KVHash struct {
 	Key   string      `json:"key,omitempty"`
-	Value KVHashValue `json:"value,omitempty"`
+	Value KVHashValue `json:"value,omitzero"`
 }
 
 // KVHashValue holds the values for a hash key.

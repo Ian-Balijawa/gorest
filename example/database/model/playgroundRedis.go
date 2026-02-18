@@ -9,7 +9,7 @@ type RedisData struct {
 // RedisDataHash represents a key with hash values for Redis.
 type RedisDataHash struct {
 	Key   string             `json:"key,omitempty"`
-	Value RedisDataHashValue `json:"value,omitempty"`
+	Value RedisDataHashValue `json:"value,omitzero"`
 }
 
 // RedisDataHashValue holds the hash field values for RedisDataHash.

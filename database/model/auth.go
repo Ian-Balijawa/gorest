@@ -38,8 +38,8 @@ const (
 // Auth represents the auths table.
 type Auth struct {
 	AuthID      uint64         `gorm:"primaryKey" json:"authID,omitempty"`
-	CreatedAt   time.Time      `json:"createdAt,omitempty"`
-	UpdatedAt   time.Time      `json:"updatedAt,omitempty"`
+	CreatedAt   time.Time      `json:"createdAt,omitzero"`
+	UpdatedAt   time.Time      `json:"updatedAt,omitzero"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 	Email       string         `gorm:"index" json:"email"`
 	EmailCipher string         `json:"-"`
@@ -122,8 +122,8 @@ type AuthPayload struct {
 // with a new one.
 type TempEmail struct {
 	ID          uint64    `gorm:"primaryKey" json:"-"`
-	CreatedAt   time.Time `json:"createdAt,omitempty"`
-	UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+	CreatedAt   time.Time `json:"createdAt,omitzero"`
+	UpdatedAt   time.Time `json:"updatedAt,omitzero"`
 	Email       string    `gorm:"index" json:"emailNew"`
 	Password    string    `gorm:"-" json:"password,omitempty"`
 	EmailCipher string    `json:"-"`
