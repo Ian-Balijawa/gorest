@@ -36,7 +36,7 @@ func HTMLModel(in []string) map[string]any {
 
 	model := make(map[string]any)
 
-	for i := 0; i < length; i += 2 {
+	for i := 0; i+1 < length; i += 2 {
 		model[in[i]] = in[i+1]
 	}
 
