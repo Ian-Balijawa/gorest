@@ -230,41 +230,41 @@ func addressFilter(address *model.Geocoding, addDocIDInFilter bool) bson.D {
 		filter = append(filter, bson.E{Key: "_id", Value: address.ID})
 	}
 	if address.FormattedAddress != nil && *address.FormattedAddress != "" {
-		filter = append(filter, bson.E{Key: "formattedAddress", Value: bson.M{"$eq": *address.FormattedAddress}})
+		filter = append(filter, bson.E{Key: "formattedAddress", Value: bson.D{{Key: "$eq", Value: *address.FormattedAddress}}})
 	}
 	if address.StreetName != nil && *address.StreetName != "" {
-		filter = append(filter, bson.E{Key: "streetName", Value: bson.M{"$eq": *address.StreetName}})
+		filter = append(filter, bson.E{Key: "streetName", Value: bson.D{{Key: "$eq", Value: *address.StreetName}}})
 	}
 	if address.HouseNumber != nil && *address.HouseNumber != "" {
-		filter = append(filter, bson.E{Key: "houseNumber", Value: bson.M{"$eq": *address.HouseNumber}})
+		filter = append(filter, bson.E{Key: "houseNumber", Value: bson.D{{Key: "$eq", Value: *address.HouseNumber}}})
 	}
 	if address.PostalCode != nil && *address.PostalCode != "" {
-		filter = append(filter, bson.E{Key: "postalCode", Value: bson.M{"$eq": *address.PostalCode}})
+		filter = append(filter, bson.E{Key: "postalCode", Value: bson.D{{Key: "$eq", Value: *address.PostalCode}}})
 	}
 	if address.County != nil && *address.County != "" {
-		filter = append(filter, bson.E{Key: "county", Value: bson.M{"$eq": *address.County}})
+		filter = append(filter, bson.E{Key: "county", Value: bson.D{{Key: "$eq", Value: *address.County}}})
 	}
 	if address.City != nil && *address.City != "" {
-		filter = append(filter, bson.E{Key: "city", Value: bson.M{"$eq": *address.City}})
+		filter = append(filter, bson.E{Key: "city", Value: bson.D{{Key: "$eq", Value: *address.City}}})
 	}
 	if address.State != nil && *address.State != "" {
-		filter = append(filter, bson.E{Key: "state", Value: bson.M{"$eq": *address.State}})
+		filter = append(filter, bson.E{Key: "state", Value: bson.D{{Key: "$eq", Value: *address.State}}})
 	}
 	if address.StateCode != nil && *address.StateCode != "" {
-		filter = append(filter, bson.E{Key: "stateCode", Value: bson.M{"$eq": *address.StateCode}})
+		filter = append(filter, bson.E{Key: "stateCode", Value: bson.D{{Key: "$eq", Value: *address.StateCode}}})
 	}
 	if address.Country != nil && *address.Country != "" {
-		filter = append(filter, bson.E{Key: "country", Value: bson.M{"$eq": *address.Country}})
+		filter = append(filter, bson.E{Key: "country", Value: bson.D{{Key: "$eq", Value: *address.Country}}})
 	}
 	if address.CountryCode != nil && *address.CountryCode != "" {
-		filter = append(filter, bson.E{Key: "countryCode", Value: bson.M{"$eq": *address.CountryCode}})
+		filter = append(filter, bson.E{Key: "countryCode", Value: bson.D{{Key: "$eq", Value: *address.CountryCode}}})
 	}
 	if address.Geometry != nil {
 		if address.Geometry.Latitude != nil {
-			filter = append(filter, bson.E{Key: "latitude", Value: bson.M{"$eq": *address.Geometry.Latitude}})
+			filter = append(filter, bson.E{Key: "latitude", Value: bson.D{{Key: "$eq", Value: *address.Geometry.Latitude}}})
 		}
 		if address.Geometry.Longitude != nil {
-			filter = append(filter, bson.E{Key: "longitude", Value: bson.M{"$eq": *address.Geometry.Longitude}})
+			filter = append(filter, bson.E{Key: "longitude", Value: bson.D{{Key: "$eq", Value: *address.Geometry.Longitude}}})
 		}
 	}
 

@@ -1364,7 +1364,7 @@ func addressFilter(address *model.Geocoding) bson.D {
     filter := bson.D{}
     if address.City != nil && *address.City != "" {
         // Use explicit $eq operator for security
-        filter = append(filter, bson.E{Key: "city", Value: bson.M{"$eq": *address.City}})
+        filter = append(filter, bson.E{Key: "city", Value: bson.D{{Key: "$eq", Value: *address.City}}})
     }
     return filter
 }
