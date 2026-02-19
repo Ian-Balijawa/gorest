@@ -731,7 +731,7 @@ func getParamsJWT() (params middleware.JWTParameters, err error) {
 	privateKeyFile := strings.TrimSpace(os.Getenv("PRIV_KEY_FILE_PATH"))
 	if privateKeyFile != "" {
 		// load the private key
-		privateKeyBytes, errThis := os.ReadFile(privateKeyFile) // #nosec G703 -- file path is from env variable, not user input
+		privateKeyBytes, errThis := os.ReadFile(privateKeyFile) // #nosec G703 G304 -- file path is from env variable, not user input
 		if errThis != nil {
 			err = errThis
 			return
@@ -777,7 +777,7 @@ func getParamsJWT() (params middleware.JWTParameters, err error) {
 	publicKeyFile := strings.TrimSpace(os.Getenv("PUB_KEY_FILE_PATH"))
 	if publicKeyFile != "" {
 		// load the public key
-		publicKeyBytes, errThis := os.ReadFile(publicKeyFile) // #nosec G703 -- file path is from env variable, not user input
+		publicKeyBytes, errThis := os.ReadFile(publicKeyFile) // #nosec G703 G304 -- file path is from env variable, not user input
 		if errThis != nil {
 			err = errThis
 			return
