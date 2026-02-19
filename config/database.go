@@ -20,23 +20,23 @@ type DatabaseConfig struct {
 type RDBMS struct {
 	Activate string
 	Env      struct {
-		Driver   string
-		Host     string
-		Port     string
-		TimeZone string
+		Driver   string `json:"-"`
+		Host     string `json:"-"`
+		Port     string `json:"-"`
+		TimeZone string `json:"-"`
 	}
 	Access struct {
-		DbName string
-		User   string
-		Pass   string
+		DbName string `json:"-"`
+		User   string `json:"-"`
+		Pass   string `json:"-"`
 	}
 	Ssl struct {
-		Sslmode    string
-		MinTLS     string
-		RootCA     string
-		ServerCert string
-		ClientCert string
-		ClientKey  string
+		Sslmode    string `json:"-"`
+		MinTLS     string `json:"-"`
+		RootCA     string `json:"-"`
+		ServerCert string `json:"-"`
+		ClientCert string `json:"-"`
+		ClientKey  string `json:"-"`
 	}
 	Conn struct {
 		MaxIdleConns    int
@@ -52,8 +52,8 @@ type RDBMS struct {
 type REDIS struct {
 	Activate string
 	Env      struct {
-		Host string
-		Port string
+		Host string `json:"-"`
+		Port string `json:"-"`
 	}
 	Conn struct {
 		PoolSize int
@@ -66,8 +66,8 @@ type MongoDB struct {
 	Activate string
 	Env      struct {
 		AppName  string
-		URI      string
-		PoolSize uint64
+		URI      string `json:"-"`
+		PoolSize uint64 `json:"-"`
 		PoolMon  string
 		ConnTTL  int
 	}

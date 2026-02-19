@@ -4,7 +4,7 @@ package config
 type EmailConfig struct {
 	Activate     string
 	Provider     string
-	APIToken     string
+	APIToken     string `json:"-"`
 	AddrFrom     string
 	TrackOpens   bool
 	TrackLinks   string

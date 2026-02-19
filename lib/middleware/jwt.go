@@ -22,16 +22,16 @@ import (
 // JWTParameters holds params to configure JWT.
 type JWTParameters struct {
 	Algorithm     string
-	AccessKey     []byte
+	AccessKey     []byte `json:"-"`
 	AccessKeyTTL  int
-	RefreshKey    []byte
+	RefreshKey    []byte `json:"-"`
 	RefreshKeyTTL int
-	PrivKeyECDSA  *ecdsa.PrivateKey
-	PubKeyECDSA   *ecdsa.PublicKey
-	PrivKeyEdDSA  ed25519.PrivateKey
-	PubKeyEdDSA   ed25519.PublicKey
-	PrivKeyRSA    *rsa.PrivateKey
-	PubKeyRSA     *rsa.PublicKey
+	PrivKeyECDSA  *ecdsa.PrivateKey  `json:"-"`
+	PubKeyECDSA   *ecdsa.PublicKey   `json:"-"`
+	PrivKeyEdDSA  ed25519.PrivateKey `json:"-"`
+	PubKeyEdDSA   ed25519.PublicKey  `json:"-"`
+	PrivKeyRSA    *rsa.PrivateKey    `json:"-"`
+	PubKeyRSA     *rsa.PublicKey     `json:"-"`
 
 	Audience string
 	Issuer   string

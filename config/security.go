@@ -14,8 +14,8 @@ type SecurityConfig struct {
 
 	MustBasicAuth string
 	BasicAuth     struct {
-		Username string
-		Password string
+		Username string `json:"-"`
+		Password string `json:"-"`
 	}
 
 	MustJWT string
@@ -33,12 +33,12 @@ type SecurityConfig struct {
 
 	MustHash string
 	HashPass lib.HashPassConfig
-	HashSec  string // optional secret for argon2id hashing
+	HashSec  string `json:"-"` // optional secret for argon2id hashing
 
 	// data encryption at rest
 	MustCipher bool
-	CipherKey  []byte // for 256-bit ChaCha20-Poly1305
-	Blake2bSec []byte // optional secret for blake2b hashing
+	CipherKey  []byte `json:"-"` // for 256-bit ChaCha20-Poly1305
+	Blake2bSec []byte `json:"-"` // optional secret for blake2b hashing
 
 	VerifyEmail bool
 	RecoverPass bool
