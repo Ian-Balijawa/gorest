@@ -1,6 +1,8 @@
 # gorest | RESTful API Starter kit
 
-<img align="right" width="350px" src="https://cdn.pilinux.workers.dev/images/GoREST/logo/GoREST-Logo.png">
+<!-- markdownlint-disable MD033 -->
+<img align="right" alt="GoREST logo" width="350px" src="https://cdn.pilinux.workers.dev/images/GoREST/logo/GoREST-Logo.png">
+<!-- markdownlint-enable MD033 -->
 
 ![CodeQL][02]
 ![Go][07]
@@ -38,8 +40,29 @@ the primary integration entry point.
 
 Additional agent-specific behavior is documented in [AGENTS.md][20].
 
+### OpenCode skills
+
+If you use the OpenCode agent (or a compatible agent runner), no extra setup is required:
+
+- The agent should read `llms.txt` for authoritative project context.
+- The agent should follow `AGENTS.md` for repo-specific workflows (build, lint, test env).
+- Task-specific skill guides live in `.agents/skills/` and are intended to be automatically
+  selected by the agent during runs.
+
+You can also request a skill explicitly in your prompt when you want a specific workflow. Examples:
+
+- "Use `test-runner` and run `go test -v -cover ./...` with `setTestEnv.sh`"
+- "Use `ci-orchestrator` and reproduce CI locally"
+- "Use `config-loader-helper` and list required env vars for JWT + Redis"
+- "Use `migration-helper` and assess the schema impact of a model change"
+
+If you contribute to gorest (or build your own project based on it) and you add a new recurring
+workflow, document it as a skill in `.agents/skills/<skill-name>/SKILL.md` so agents can discover
+and apply it consistently.
+
 ## Requirement
 
+- `Go 1.24.1+` (for versions `1.11.x`)
 - `Go 1.24.1+` (for versions `1.10.x`)
 - `Go 1.23+` (for versions `1.9.x`)
 - `Go 1.23+` (for versions `1.8.x`)
