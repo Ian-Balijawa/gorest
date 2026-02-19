@@ -98,7 +98,7 @@ func InitTLSMySQL() error {
 	var err error
 
 	if rootCA != "" {
-		pem, err = os.ReadFile(rootCA)
+		pem, err = os.ReadFile(rootCA) // #nosec G304 -- file path is from config, not user input
 		if err != nil {
 			return fmt.Errorf("failed to read root CA file: %w", err)
 		}
@@ -107,7 +107,7 @@ func InitTLSMySQL() error {
 			return errors.New("missing server certificate")
 		}
 
-		pem, err = os.ReadFile(serverCert)
+		pem, err = os.ReadFile(serverCert) // #nosec G304 -- file path is from config, not user input
 		if err != nil {
 			return fmt.Errorf("failed to read server certificate file: %w", err)
 		}

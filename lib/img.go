@@ -26,7 +26,7 @@ func ByteToPNG(imgByte []byte, dir string) (string, error) {
 		return "", err
 	}
 
-	out, err := os.Create(fullPath)
+	out, err := os.Create(fullPath) // #nosec G304 -- file path is constructed, not based on user input
 	if err != nil {
 		return "", err
 	}

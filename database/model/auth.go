@@ -32,7 +32,7 @@ const (
 const (
 	EmailVerificationKeyPrefix string = "gorest-email-verification-"
 	EmailUpdateKeyPrefix       string = "gorest-email-update-"
-	PasswordRecoveryKeyPrefix  string = "gorest-pass-recover-"
+	PasswordRecoveryKeyPrefix  string = "gorest-pass-recover-" // #nosec G101 —- Redis key prefix only; contains no secret credentials
 )
 
 // Auth represents the auths table.
