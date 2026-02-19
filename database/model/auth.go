@@ -45,7 +45,7 @@ type Auth struct {
 	EmailCipher string         `json:"-"`
 	EmailNonce  string         `json:"-"`
 	EmailHash   string         `gorm:"index" json:"-"`
-	Password    string         `json:"password"`
+	Password    string         `json:"password"` // #nosec G117 -- used for input only, custom MarshalJSON excludes it from output
 	VerifyEmail int8           `json:"-"`
 }
 
@@ -54,7 +54,7 @@ func (v *Auth) UnmarshalJSON(b []byte) error {
 	aux := struct {
 		AuthID   uint64 `json:"authID"`
 		Email    string `json:"email"`
-		Password string `json:"password"`
+		Password string `json:"password"` // #nosec G117 -- internal unmarshal helper, password is hashed before storage
 	}{}
 	if err := json.Unmarshal(b, &aux); err != nil {
 		return err
@@ -104,7 +104,7 @@ func (v Auth) MarshalJSON() ([]byte, error) {
 // AuthPayload holds all auth-related request data.
 type AuthPayload struct {
 	Email    string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty"` // #nosec G117 -- request payload only, never stored or returned with sensitive data
 
 	VerificationCode string `json:"verificationCode,omitempty"`
 
@@ -125,7 +125,7 @@ type TempEmail struct {
 	CreatedAt   time.Time `json:"createdAt,omitzero"`
 	UpdatedAt   time.Time `json:"updatedAt,omitzero"`
 	Email       string    `gorm:"index" json:"emailNew"`
-	Password    string    `gorm:"-" json:"password,omitempty"`
+	Password    string    `gorm:"-" json:"password,omitempty"` // #nosec G117 -- value not from DB, only used for validation
 	EmailCipher string    `json:"-"`
 	EmailNonce  string    `json:"-"`
 	EmailHash   string    `gorm:"index" json:"-"`
