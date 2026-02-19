@@ -446,7 +446,7 @@ func security() (securityConfig SecurityConfig, err error) {
 			if _, errThis = os.Stat(securityConfig.TwoFA.PathQR); os.IsNotExist(errThis) {
 				// directory does not exist, create the directory
 				path := filepath.Join(".", securityConfig.TwoFA.PathQR)
-				err = os.MkdirAll(path, os.ModePerm)
+				err = os.MkdirAll(path, 0750)
 				if err != nil {
 					return
 				}
@@ -681,7 +681,7 @@ func view() (viewConfig ViewConfig, err error) {
 			if _, errThis := os.Stat(viewConfig.Directory); os.IsNotExist(errThis) {
 				// directory does not exist, create the directory
 				path := filepath.Join(".", viewConfig.Directory)
-				err = os.MkdirAll(path, os.ModePerm)
+				err = os.MkdirAll(path, 0750)
 				if err != nil {
 					return
 				}
