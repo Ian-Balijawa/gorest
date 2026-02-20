@@ -18,6 +18,7 @@ func GracefulShutdown(srv *http.Server, timeout time.Duration, done chan struct{
 	// create context that listens for the interrupt signal from the OS
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(sigCh)
 
 	sig := <-sigCh
 	log.Printf("signal %v received: starting graceful shutdown with timeout %v\n", sig, timeout)

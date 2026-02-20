@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/pilinux/gorest/config"
@@ -49,6 +50,9 @@ var RedisConnTTL int
 
 // mongoClient holds the MongoDB client connection instance.
 var mongoClient *mongo.Client
+
+// protect CloseAllDB from concurrent calls
+var closeAllOnce sync.Once
 
 // InitDB initializes the database connection.
 func InitDB() *gorm.DB {
@@ -309,22 +313,24 @@ func GetMongo() *mongo.Client {
 
 // CloseAllDB closes all database connections.
 func CloseAllDB() error {
-	err := CloseSQL()
-	if err != nil {
-		return err
-	}
+	var err error
+	closeAllOnce.Do(func() {
+		err = CloseSQL()
+		if err != nil {
+			return
+		}
 
-	err = CloseRedis()
-	if err != nil {
-		return err
-	}
+		err = CloseRedis()
+		if err != nil {
+			return
+		}
 
-	err = CloseMongo()
-	if err != nil {
-		return err
-	}
-
-	return nil
+		err = CloseMongo()
+		if err != nil {
+			return
+		}
+	})
+	return err
 }
 
 // CloseSQL closes the SQL database connection.

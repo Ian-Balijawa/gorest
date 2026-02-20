@@ -159,13 +159,13 @@ func TestGracefulShutdown_SuccessWithDBFail(t *testing.T) {
 		return expectedErr
 	}
 
-	// channel to signal shutdown completion
+	// channel to signal shutdown completion and to receive shutdown error
 	done := make(chan struct{})
-	var shutdownErr error
+	errCh := make(chan error, 1)
 
-	// run GracefulShutdown with the failing closeDB function
+	// run GracefulShutdown with the failing closeDB function and send error on channel
 	go func() {
-		shutdownErr = server.GracefulShutdown(srv, 5*time.Second, done, closeDB)
+		errCh <- server.GracefulShutdown(srv, 5*time.Second, done, closeDB)
 	}()
 
 	// send SIGINT after 1 second
@@ -179,7 +179,8 @@ func TestGracefulShutdown_SuccessWithDBFail(t *testing.T) {
 		t.Fatal("shutdown did not complete within 10 seconds")
 	}
 
-	// verify that the closeDB error is returned
+	// receive and verify that the closeDB error is returned
+	shutdownErr := <-errCh
 	if shutdownErr == nil {
 		t.Error("expected an error, got nil")
 	} else if !errors.Is(shutdownErr, expectedErr) {
@@ -225,13 +226,13 @@ func TestGracefulShutdown_TimeoutForceCloseSuccess(t *testing.T) {
 	// wait briefly to ensure the request starts
 	time.Sleep(500 * time.Millisecond)
 
-	// channel to signal shutdown completion
+	// channel to signal shutdown completion and to receive shutdown error
 	done := make(chan struct{})
-	var shutdownErr error
+	errCh := make(chan error, 1)
 
-	// run GracefulShutdown with a 2-second timeout
+	// run GracefulShutdown with a 2-second timeout and send error on channel
 	go func() {
-		shutdownErr = server.GracefulShutdown(srv, 2*time.Second, done)
+		errCh <- server.GracefulShutdown(srv, 2*time.Second, done)
 	}()
 
 	// send SIGINT after 1 second, while the handler is still sleeping
@@ -245,7 +246,8 @@ func TestGracefulShutdown_TimeoutForceCloseSuccess(t *testing.T) {
 		t.Fatal("shutdown did not complete within 10 seconds")
 	}
 
-	// verify that the error is context.DeadlineExceeded
+	// receive and verify that the error is context.DeadlineExceeded
+	shutdownErr := <-errCh
 	if !errors.Is(shutdownErr, context.DeadlineExceeded) {
 		t.Errorf("expected context.DeadlineExceeded, got %v", shutdownErr)
 	}
