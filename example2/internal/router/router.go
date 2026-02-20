@@ -303,12 +303,12 @@ func SetupRouter(configure *gconfig.Configuration) (*gin.Engine, error) {
 			addressAPI := handler.NewAddressAPI(addressSrv)
 
 			rAddress := v1.Group("addresses")
-			rAddress.POST("", addressAPI.AddAddress)               // Not protected
-			rAddress.GET("", addressAPI.GetAddresses)              // Not protected
-			rAddress.GET("/:id", addressAPI.GetAddress)            // Not protected
-			rAddress.POST("filter", addressAPI.GetAddressByFilter) // Not protected
-			rAddress.PUT("", addressAPI.UpdateAddress)             // Not protected
-			rAddress.DELETE("/:id", addressAPI.DeleteAddress)      // Not protected
+			rAddress.POST("", addressAPI.AddAddress)                 // Not protected
+			rAddress.GET("", addressAPI.GetAddresses)                // Not protected
+			rAddress.GET("/:id", addressAPI.GetAddress)              // Not protected
+			rAddress.POST("filter", addressAPI.GetAddressesByFilter) // Not protected
+			rAddress.PUT("", addressAPI.UpdateAddress)               // Not protected
+			rAddress.DELETE("/:id", addressAPI.DeleteAddress)        // Not protected
 		}
 
 		// Playground - JWT

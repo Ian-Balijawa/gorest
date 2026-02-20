@@ -120,25 +120,19 @@ func (s *AddressService) GetAddress(ctx context.Context, id string) (httpRespons
 	return
 }
 
-// GetAddressByFilter retrieves an address based on a filter.
-func (s *AddressService) GetAddressByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) (httpResponse gmodel.HTTPResponse, httpStatusCode int) {
+// GetAddressesByFilter retrieves one or more addresses based on a filter.
+func (s *AddressService) GetAddressesByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) (httpResponse gmodel.HTTPResponse, httpStatusCode int) {
 	if err := validateAddress(address); err != nil {
 		httpResponse.Message = err.Error()
 		httpStatusCode = http.StatusBadRequest
 		return
 	}
 
-	addr, err := s.addressRepo.GetAddressByFilter(ctx, address, addDocIDInFilter)
+	addrs, err := s.addressRepo.GetAddressesByFilter(ctx, address, addDocIDInFilter)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			httpResponse.Message = "request canceled"
 			httpStatusCode = http.StatusRequestTimeout
-			return
-		}
-
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			httpResponse.Message = "address not found"
-			httpStatusCode = http.StatusNotFound
 			return
 		}
 
@@ -148,7 +142,13 @@ func (s *AddressService) GetAddressByFilter(ctx context.Context, address *model.
 		return
 	}
 
-	httpResponse.Message = addr
+	if len(addrs) == 0 {
+		httpResponse.Message = "address not found"
+		httpStatusCode = http.StatusNotFound
+		return
+	}
+
+	httpResponse.Message = addrs
 	httpStatusCode = http.StatusOK
 	return
 }

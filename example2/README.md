@@ -410,6 +410,8 @@ curl http://localhost:8999/api/v1/addresses/60d5f4832f8fb814c8a1e7d4
 
 - Search by fields. _(exclude-address-id: omit `_id` in filter)_
 - Body same as above, just send the fields you want to match.
+- Response: an array of one or more matching address objects.
+  If no matches are found, the API returns HTTP 404 with message `"address not found"`.
 
 #### PUT /addresses
 

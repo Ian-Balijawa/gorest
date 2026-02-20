@@ -88,12 +88,12 @@ func (api *AddressAPI) GetAddress(c *gin.Context) {
 	grenderer.Render(c, resp, statusCode)
 }
 
-// GetAddressByFilter handles the HTTP POST request to retrieve an address by filter.
+// GetAddressesByFilter handles the HTTP POST request to retrieve addresses by filter.
 //
 // Endpoint: POST /api/v1/addresses/filter?exclude-address-id=
 //
 // Authorization: None
-func (api *AddressAPI) GetAddressByFilter(c *gin.Context) {
+func (api *AddressAPI) GetAddressesByFilter(c *gin.Context) {
 	address := &model.Geocoding{}
 	if err := c.ShouldBindJSON(address); err != nil {
 		grenderer.Render(c, gin.H{"message": err.Error()}, http.StatusBadRequest)
@@ -112,7 +112,7 @@ func (api *AddressAPI) GetAddressByFilter(c *gin.Context) {
 	defer cancel()
 
 	addDocIDInFilter := strings.ToLower(strings.TrimSpace(c.Query("exclude-address-id"))) != "true"
-	resp, statusCode := api.addressService.GetAddressByFilter(ctx, address, addDocIDInFilter)
+	resp, statusCode := api.addressService.GetAddressesByFilter(ctx, address, addDocIDInFilter)
 	grenderer.Render(c, resp, statusCode)
 }
 

@@ -26,7 +26,7 @@ type AddressRepository interface {
 	AddAddress(ctx context.Context, address *model.Geocoding) (*mongo.InsertOneResult, error)
 	GetAddresses(ctx context.Context) ([]model.Geocoding, error)
 	GetAddress(ctx context.Context, id bson.ObjectID) (*model.Geocoding, error)
-	GetAddressByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) (*model.Geocoding, error)
+	GetAddressesByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) ([]model.Geocoding, error)
 	UpdateAddressFields(ctx context.Context, address *model.Geocoding) error
 	DeleteAddress(ctx context.Context, id bson.ObjectID) error
 }
@@ -84,15 +84,24 @@ func (r *AddressRepo) GetAddress(ctx context.Context, id bson.ObjectID) (*model.
 	return &address, nil
 }
 
-// GetAddressByFilter retrieves an address based on a filter from the MongoDB "geocodes" collection.
-func (r *AddressRepo) GetAddressByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) (*model.Geocoding, error) {
+// GetAddressesByFilter retrieves one or more addresses based on a filter from the MongoDB "geocodes" collection.
+func (r *AddressRepo) GetAddressesByFilter(ctx context.Context, address *model.Geocoding, addDocIDInFilter bool) ([]model.Geocoding, error) {
 	filter := addressFilter(address, addDocIDInFilter)
 
-	err := r.coll().FindOne(ctx, filter).Decode(address)
+	cursor, err := r.coll().Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	return address, nil
+	defer func() {
+		_ = cursor.Close(ctx)
+	}()
+
+	var addresses []model.Geocoding
+	if err := cursor.All(ctx, &addresses); err != nil {
+		return nil, err
+	}
+
+	return addresses, nil
 }
 
 // UpdateAddress updates an existing address in the MongoDB "geocodes" collection.
