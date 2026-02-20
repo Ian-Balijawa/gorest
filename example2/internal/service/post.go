@@ -27,9 +27,22 @@ func NewPostService(postRepo repo.PostRepository, userRepo repo.UserRepository) 
 	}
 }
 
-// GetPosts retrieves all posts.
-func (s *PostService) GetPosts(ctx context.Context) (httpResponse gmodel.HTTPResponse, httpStatusCode int) {
-	posts, err := s.postRepo.GetPosts(ctx)
+// GetPosts retrieves a paginated list of posts.
+func (s *PostService) GetPosts(ctx context.Context, page, pageSize int) (httpResponse gmodel.HTTPResponse, httpStatusCode int) {
+	// normalize pagination params
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+	offset := (page - 1) * pageSize
+
+	// get total count
+	total, err := s.postRepo.CountPosts(ctx)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			httpResponse.Message = "request canceled"
@@ -43,13 +56,46 @@ func (s *PostService) GetPosts(ctx context.Context) (httpResponse gmodel.HTTPRes
 		return
 	}
 
+	if total == 0 {
+		httpResponse.Message = "no post found"
+		httpStatusCode = http.StatusNotFound
+		return
+	}
+
+	// get paginated posts
+	posts, err := s.postRepo.ListPosts(ctx, pageSize, offset)
+	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			httpResponse.Message = "request canceled"
+			httpStatusCode = http.StatusRequestTimeout
+			return
+		}
+
+		log.WithError(err).Error("GetPosts.s.2")
+		httpResponse.Message = "internal server error"
+		httpStatusCode = http.StatusInternalServerError
+		return
+	}
+
 	if len(posts) == 0 {
 		httpResponse.Message = "no post found"
 		httpStatusCode = http.StatusNotFound
 		return
 	}
 
-	httpResponse.Message = posts
+	hasNext := int64(page*pageSize) < total
+	hasPrevious := page > 1
+
+	result := map[string]any{
+		"hasNext":     hasNext,
+		"hasPrevious": hasPrevious,
+		"page":        page,
+		"pageSize":    pageSize,
+		"posts":       posts,
+		"total":       total,
+	}
+
+	httpResponse.Message = result
 	httpStatusCode = http.StatusOK
 	return
 }

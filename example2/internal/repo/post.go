@@ -24,6 +24,8 @@ func NewPostRepo(conn *gorm.DB) *PostRepo {
 // PostRepository defines the contract for post-related operations.
 type PostRepository interface {
 	GetPosts(ctx context.Context) ([]model.Post, error)
+	ListPosts(ctx context.Context, limit, offset int) ([]model.Post, error)
+	CountPosts(ctx context.Context) (int64, error)
 	GetPost(ctx context.Context, postID uint64) (*model.Post, error)
 	GetPostsByUserID(ctx context.Context, userID uint64) ([]model.Post, error)
 	CreatePost(ctx context.Context, post *model.Post) error
@@ -43,6 +45,27 @@ func (r *PostRepo) GetPosts(ctx context.Context) ([]model.Post, error) {
 		return nil, err
 	}
 	return posts, nil
+}
+
+// ListPosts returns a paginated list of posts ordered by post_id descending.
+func (r *PostRepo) ListPosts(ctx context.Context, limit, offset int) ([]model.Post, error) {
+	var posts []model.Post
+	err := r.db.WithContext(ctx).
+		Order("post_id desc").
+		Limit(limit).
+		Offset(offset).
+		Find(&posts).Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
+}
+
+// CountPosts returns the total number of posts in the database.
+func (r *PostRepo) CountPosts(ctx context.Context) (int64, error) {
+	var total int64
+	err := r.db.WithContext(ctx).Model(&model.Post{}).Count(&total).Error
+	return total, err
 }
 
 // GetPost returns a post with the given postID from the database.

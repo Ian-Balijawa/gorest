@@ -240,10 +240,40 @@ Delete authenticated user account and all related posts/hobbies. _(Requires JWT)
 
 #### GET /posts
 
-Get all posts.
+Get all posts with pagination support.
+
+Query parameters:
+
+- `page` (optional): Page number, default: 1
+- `pageSize` (optional): Number of posts per page, default: 10, max: 100
 
 ```bash
+# Get first page with default page size (10)
 curl http://localhost:8999/api/v1/posts
+
+# Get page 2 with 1 post per page
+curl "http://localhost:8999/api/v1/posts?page=2&pageSize=1"
+```
+
+Response:
+
+```json
+{
+  "hasNext": true,
+  "hasPrevious": true,
+  "page": 2,
+  "pageSize": 1,
+  "posts": [
+    {
+      "postID": 8,
+      "createdAt": 1771575386,
+      "updatedAt": 1771575386,
+      "title": "My First Post",
+      "body": "Hello, gorest!"
+    }
+  ],
+  "total": 9
+}
 ```
 
 #### GET /posts/:id

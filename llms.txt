@@ -837,8 +837,8 @@ func (r *PostRepo) DeletePost(ctx context.Context, id uint64) error {
 Pagination is app-specific, but the common gorest approach is:
 
 1. Define query params (`page`, `pageSize`) with safe defaults and a hard maximum
-2. Add repository methods that accept `limit` and `offset` (and optionally a `Count` query)
-3. Implement a handler that validates inputs, calls repo, and returns a response payload that includes pagination metadata
+2. Add repository methods that accept `limit` and `offset` (and a `Count` query)
+3. Implement a service that validates inputs, calls repo, and returns a response payload that includes pagination metadata
 4. Wire the route in your router (optionally behind `gmiddleware.JWT()` and other middleware)
 
 Example query params and response types:
@@ -858,7 +858,7 @@ func (q *PageQuery) Normalize() (page, pageSize, offset int) {
         page = 1
     }
     if pageSize <= 0 {
-        pageSize = 20
+        pageSize = 10
     }
     if pageSize > 100 {
         pageSize = 100
@@ -868,10 +868,13 @@ func (q *PageQuery) Normalize() (page, pageSize, offset int) {
 }
 
 type PageResult[T any] struct {
-    Items    []T   `json:"items"`
-    Page     int   `json:"page"`
-    PageSize int   `json:"pageSize"`
-    Total    int64 `json:"total"`
+    // Items can be named "posts", "users", etc. in your implementation
+    Items       []T   `json:"items"`
+    Page        int   `json:"page"`
+    PageSize    int   `json:"pageSize"`
+    Total       int64 `json:"total"`
+    HasNext     bool  `json:"hasNext"`
+    HasPrevious bool  `json:"hasPrevious"`
 }
 ```
 
@@ -913,64 +916,151 @@ func (r *PostRepo) CountPosts(ctx context.Context) (int64, error) {
 }
 ```
 
-Handler/controller (Gin) example using gorest response wrapper:
+Service layer example (validates pagination, calls repo, builds response):
+
+```go
+package service
+
+import (
+    "context"
+    "errors"
+    "net/http"
+
+    gmodel "github.com/pilinux/gorest/database/model"
+    log "github.com/sirupsen/logrus"
+
+    "your-app/internal/repo"
+)
+
+type PostService struct {
+    postRepo repo.PostRepository
+}
+
+func (s *PostService) GetPosts(ctx context.Context, page, pageSize int) (httpResponse gmodel.HTTPResponse, httpStatusCode int) {
+    // normalize pagination params
+    if page <= 0 {
+        page = 1
+    }
+    if pageSize <= 0 {
+        pageSize = 10
+    }
+    if pageSize > 100 {
+        pageSize = 100
+    }
+    offset := (page - 1) * pageSize
+
+    total, err := s.postRepo.CountPosts(ctx)
+    if err != nil {
+        if errors.Is(err, context.Canceled) {
+            httpResponse.Message = "request canceled"
+            httpStatusCode = http.StatusRequestTimeout
+            return
+        }
+        log.WithError(err).Error("GetPosts.s.1")
+        httpResponse.Message = "internal server error"
+        httpStatusCode = http.StatusInternalServerError
+        return
+    }
+
+    if total == 0 {
+        httpResponse.Message = "no post found"
+        httpStatusCode = http.StatusNotFound
+        return
+    }
+
+    posts, err := s.postRepo.ListPosts(ctx, pageSize, offset)
+    if err != nil {
+        if errors.Is(err, context.Canceled) {
+            httpResponse.Message = "request canceled"
+            httpStatusCode = http.StatusRequestTimeout
+            return
+        }
+        log.WithError(err).Error("GetPosts.s.2")
+        httpResponse.Message = "internal server error"
+        httpStatusCode = http.StatusInternalServerError
+        return
+    }
+
+    hasNext := int64(page*pageSize) < total
+    hasPrevious := page > 1
+
+    result := map[string]any{
+        "hasNext":     hasNext,
+        "hasPrevious": hasPrevious,
+        "page":        page,
+        "pageSize":    pageSize,
+        "posts":       posts,
+        "total":       total,
+    }
+
+    httpResponse.Message = result
+    httpStatusCode = http.StatusOK
+    return
+}
+```
+
+Handler (Gin) example (thin layer, parses query params and calls service):
 
 ```go
 package handler
 
 import (
+    "context"
     "net/http"
+    "strconv"
+    "time"
 
     "github.com/gin-gonic/gin"
-
-    gmodel "github.com/pilinux/gorest/database/model"
     grenderer "github.com/pilinux/gorest/lib/renderer"
 
-    "your-app/internal/api"
-    "your-app/internal/repo"
+    "your-app/internal/service"
 )
 
-type PostHandler struct {
-    repo repo.PostRepository
+type PostAPI struct {
+    postService *service.PostService
 }
 
-func (h *PostHandler) ListPosts(c *gin.Context) {
-    var q api.PageQuery
-    _ = c.ShouldBindQuery(&q)
-    page, pageSize, offset := q.Normalize()
+func (api *PostAPI) GetPosts(c *gin.Context) {
+    pageStr := strings.TrimSpace(c.Query("page"))
+    pageSizeStr := strings.TrimSpace(c.Query("pageSize"))
 
-    items, err := h.repo.ListPosts(c.Request.Context(), pageSize, offset)
-    if err != nil {
-        grenderer.Render(c, gmodel.HTTPResponse{Message: "internal server error"}, http.StatusInternalServerError)
-        return
+    var page, pageSize int
+    var err error
+
+    if pageStr == "" {
+        page = 1
+    } else {
+        page, err = strconv.Atoi(pageStr)
+        if err != nil {
+            grenderer.Render(c, gin.H{"message": "invalid page parameter"}, http.StatusBadRequest)
+            return
+        }
     }
-    total, err := h.repo.CountPosts(c.Request.Context())
-    if err != nil {
-        grenderer.Render(c, gmodel.HTTPResponse{Message: "internal server error"}, http.StatusInternalServerError)
-        return
+    if pageSizeStr == "" {
+        pageSize = 10
+    } else {
+        pageSize, err = strconv.Atoi(pageSizeStr)
+        if err != nil {
+            grenderer.Render(c, gin.H{"message": "invalid pageSize parameter"}, http.StatusBadRequest)
+            return
+        }
     }
 
-    payload := api.PageResult[any]{
-        Items:    make([]any, 0, len(items)),
-        Page:     page,
-        PageSize: pageSize,
-        Total:    total,
-    }
-    for i := range items {
-        payload.Items = append(payload.Items, items[i])
-    }
+    ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+    defer cancel()
 
-    grenderer.Render(c, gmodel.HTTPResponse{Message: payload}, http.StatusOK)
+    resp, statusCode := api.postService.GetPosts(ctx, page, pageSize)
+    grenderer.Render(c, resp, statusCode)
 }
 ```
 
 Route wiring:
 
 ```go
-posts := v1.Group("/posts")
-posts.Use(gmiddleware.JWT())
-posts.Use(gservice.JWTBlacklistChecker())
-posts.GET("", postHandler.ListPosts)
+rPosts := v1.Group("posts")
+rPosts.Use(gmiddleware.JWT())
+rPosts.Use(gservice.JWTBlacklistChecker())
+rPosts.GET("", postAPI.GetPosts)
 ```
 
 Notes:

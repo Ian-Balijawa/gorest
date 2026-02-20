@@ -27,16 +27,45 @@ func NewPostAPI(postService *service.PostService) *PostAPI {
 	}
 }
 
-// GetPosts handles the HTTP GET request to retrieve all posts.
+// GetPosts handles the HTTP GET request to retrieve paginated posts.
 //
-// Endpoint: GET /api/v1/posts
+// Endpoint: GET /api/v1/posts?page=1&pageSize=10
+//
+// Optional query parameters:
+//   - page: page number (default: 1)
+//   - pageSize: number of posts per page (default: 10, max: 100)
 //
 // Authorization: None
 func (api *PostAPI) GetPosts(c *gin.Context) {
+	pageStr := strings.TrimSpace(c.Query("page"))
+	pageSizeStr := strings.TrimSpace(c.Query("pageSize"))
+
+	var page, pageSize int
+	var err error
+
+	if pageStr == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			grenderer.Render(c, gin.H{"message": "invalid page parameter"}, http.StatusBadRequest)
+			return
+		}
+	}
+	if pageSizeStr == "" {
+		pageSize = 10
+	} else {
+		pageSize, err = strconv.Atoi(pageSizeStr)
+		if err != nil {
+			grenderer.Render(c, gin.H{"message": "invalid pageSize parameter"}, http.StatusBadRequest)
+			return
+		}
+	}
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	resp, statusCode := api.postService.GetPosts(ctx)
+	resp, statusCode := api.postService.GetPosts(ctx, page, pageSize)
 	grenderer.Render(c, resp, statusCode)
 }
 
